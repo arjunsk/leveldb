@@ -38,6 +38,11 @@ public class FileMetaData
      */
     private final InternalKey largest;
 
+
+    // AllowedSeeks is used to determine if a file should be picked for
+    // a read triggered compaction. It is decremented when read sampling
+    // in pebble.Iterator after every after every positioning operation
+    // that returns a user key (eg. Next, Prev, SeekGE, SeekLT, etc).
     /**
      * Seeks allowed until compaction
      */

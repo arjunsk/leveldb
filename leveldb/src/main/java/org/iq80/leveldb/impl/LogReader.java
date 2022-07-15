@@ -105,7 +105,21 @@ public class LogReader
      */
     private boolean skipToInitialBlock()
     {
-        int offsetInBlock = (int) (initialOffset % BLOCK_SIZE);
+
+        /*
+        Assuming that the size of a block is 32K and the starting offset is 80K,
+        then the starting position is in the third block and the offset within the block = 80 % 32 = 16,
+        and the conversion formula is as follows:
+
+        块内偏移 = 起始偏移 % 块大小 = 80 % 32 = 16K ==>
+        offset_in_block = initial_offset_ % kBlockSize
+        起始块位置 = 起始偏移 - 块内偏移 = 80K - 16K = 64K ==>
+        block_start_location = initial_offset_ - offset_in_block
+
+        Source: https://itcn.blog/p/160529026.html
+
+         */
+        int offsetInBlock = (int) (initialOffset % LogConstants.BLOCK_SIZE);
         long blockStartLocation = initialOffset - offsetInBlock;
 
         // Don't search a block if we'd be in the trailer
@@ -134,6 +148,7 @@ public class LogReader
         recordScratch.reset();
 
         // advance to the first record, if we haven't already
+        //jump to the starting position
         if (lastRecordOffset < initialOffset) {
             if (!skipToInitialBlock()) {
                 return null;
@@ -145,6 +160,16 @@ public class LogReader
 
         boolean inFragmentedRecord = false;
         while (true) {
+
+            /*
+            // ReadPhysicalRecord may have only had an empty trailer remaining in its
+            // internal buffer. Calculate the offset of the next physical record now
+            // that it has returned, properly accounting for its header size.
+
+            uint64_t physical_record_offset =
+            end_of_buffer_offset_ - buffer_.size() - kHeaderSize - fragment.size();
+
+            * */
             long physicalRecordOffset = endOfBufferOffset - currentChunk.length();
             LogChunkType chunkType = readNextChunk();
             switch (chunkType) {

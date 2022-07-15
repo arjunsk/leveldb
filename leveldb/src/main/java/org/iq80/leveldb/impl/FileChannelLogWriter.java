@@ -48,7 +48,7 @@ public class FileChannelLogWriter
     /**
      * Current offset in the current block
      */
-    private int blockOffset;
+    private int blockOffset; // NOTE: You use it while writing.
 
     public FileChannelLogWriter(File file, long fileNumber)
             throws FileNotFoundException
@@ -204,9 +204,9 @@ public class FileChannelLogWriter
         // Format the header
         SliceOutput header = Slices.allocate(HEADER_SIZE).output();
         header.writeInt(crc);
-        header.writeByte((byte) (length & 0xff));
-        header.writeByte((byte) (length >>> 8));
-        header.writeByte((byte) (type.getPersistentId()));
+        header.writeByte((byte) (length & 0xff)); // int 4 bytes
+        header.writeByte((byte) (length >>> 8));  // int 3 byte
+        header.writeByte((byte) (type.getPersistentId())); // byte 1 byte.
 
         return header.slice();
     }

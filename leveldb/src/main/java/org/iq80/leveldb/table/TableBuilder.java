@@ -234,10 +234,10 @@ public class TableBuilder
     {
         checkState(!closed, "table is finished");
 
-        // flush current data block
+        // flush current data block : NOTE: it is block
         flush();
 
-        // mark table as closed
+        // mark table as closed : NOTE: Here we are going to mark this as immutable table.
         closed = true;
 
         // write (empty) meta index block

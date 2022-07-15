@@ -205,6 +205,7 @@ public class VersionSet
         List<InternalIterator> list = new ArrayList<>();
         for (int which = 0; which < 2; which++) {
             if (!c.getInputs()[which].isEmpty()) {
+                // if the compaction state level and the which is 0
                 if (c.getLevel() + which == 0) {
                     List<FileMetaData> files = c.getInputs()[which];
                     list.add(new Level0Iterator(tableCache, files, internalKeyComparator));
@@ -267,6 +268,7 @@ public class VersionSet
         edit.setNextFileNumber(nextFileNumber.get());
         edit.setLastSequenceNumber(lastSequence);
 
+        //todo: understand
         Version version = new Version(this);
         Builder builder = new Builder(this, current);
         builder.apply(edit);
@@ -499,6 +501,7 @@ public class VersionSet
         return setupOtherInputs(level, levelInputs);
     }
 
+    // pickCompaction picks the best compaction, if any, for vs' current version.
     public Compaction pickCompaction()
     {
         // We prefer compactions triggered by too much data in a level over
@@ -550,6 +553,9 @@ public class VersionSet
         return compaction;
     }
 
+
+    // setupOtherInputs fills in the rest of the compaction inputs, regardless of
+    // whether the compaction was automatically scheduled or user initiated.
     private Compaction setupOtherInputs(int level, List<FileMetaData> levelInputs)
     {
         Entry<InternalKey, InternalKey> range = getRange(levelInputs);
@@ -563,9 +569,18 @@ public class VersionSet
         InternalKey allStart = range.getKey();
         InternalKey allLimit = range.getValue();
 
+        // Gist: Grow the inputs if it doesn't affect the number of level+1 files.
+        // Increase the range, of compaction, if the number of files already thought for compaction ie leveUpInputs,
+        // is same as the newly expanded files range, ie expanded1
+
+        // grow grows the number of inputs at c.level without changing the number of
+        // c.level+1 files in the compaction, and returns whether the inputs grew. sm
+        // and la are the smallest and largest internalKeys in all of the inputs.
+
         // See if we can grow the number of inputs in "level" without
         // changing the number of "level+1" files we pick up.
         if (!levelUpInputs.isEmpty()) {
+            //TODO: Yet to understand
             List<FileMetaData> expanded0 = getOverlappingInputs(level, allStart, allLimit);
 
             if (expanded0.size() > levelInputs.size()) {
@@ -594,6 +609,7 @@ public class VersionSet
             }
         }
 
+        // Gist: // Compute the set of level+2 files that overlap this compaction.
         // Compute the set of grandparent files that overlap this compaction
         // (parent == level+1; grandparent == level+2)
         List<FileMetaData> grandparents = ImmutableList.of();
@@ -608,6 +624,8 @@ public class VersionSet
 //                    EscapeString(largest.Encode()).c_str());
 //        }
 
+        // essential you are passing, level[i], level[i+1], level[i+2] files for compaction, so that you can make
+        // apt choices.
         Compaction compaction = new Compaction(current, level, levelInputs, levelUpInputs, grandparents);
 
         // Update the place where we will do the next compaction for this level.

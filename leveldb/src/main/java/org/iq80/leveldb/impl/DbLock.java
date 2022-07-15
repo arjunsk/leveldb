@@ -29,6 +29,10 @@ import java.nio.channels.FileLock;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
+
+/**
+ * Folder Level Lock
+ */
 public class DbLock
 {
     private final File lockFile;

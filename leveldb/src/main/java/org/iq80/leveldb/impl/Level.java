@@ -119,6 +119,8 @@ public class Level
         readStats.clear();
         for (FileMetaData fileMetaData : fileMetaDataList) {
             if (lastFileRead != null && readStats.getSeekFile() == null) {
+                //TODO: Don't know why this is added.
+
                 // We have had more than one seek for this read.  Charge the first file.
                 readStats.setSeekFile(lastFileRead);
                 readStats.setSeekFileLevel(lastFileReadLevel);
@@ -163,6 +165,7 @@ public class Level
         return insertionPoint;
     }
 
+    //TODO: Understand the usage
     public boolean someFileOverlapsRange(Slice smallestUserKey, Slice largestUserKey)
     {
         InternalKey smallestInternalKey = new InternalKey(smallestUserKey, MAX_SEQUENCE_NUMBER, VALUE);

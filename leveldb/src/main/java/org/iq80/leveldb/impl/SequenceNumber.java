@@ -40,11 +40,13 @@ public final class SequenceNumber
 
     public static ValueType unpackValueType(long num)
     {
+        // you get the last byte as we cast 8 byte long to 1 byte.
         return ValueType.getValueTypeByPersistentId((byte) num);
     }
 
     public static long unpackSequenceNumber(long num)
     {
+        // you are skipping 8bits, ie 1byte from the end. so technically, you have the first 7 bytes in the long.
         return num >>> 8;
     }
 }

@@ -70,6 +70,8 @@ public class SeekingIteratorAdapter
     @Override
     public void close()
     {
+        // Good one:!
+
         // This is an end user API.. he might screw up and close multiple times.
         // but we don't want the close multiple times as reference counts go bad.
         if (closed.compareAndSet(false, true)) {

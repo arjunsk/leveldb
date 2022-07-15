@@ -159,7 +159,7 @@ public class Compaction
                 if (userComparator.compare(userKey, f.getLargest().getUserKey()) <= 0) {
                     // We've advanced far enough
                     if (userComparator.compare(userKey, f.getSmallest().getUserKey()) >= 0) {
-                        // Key falls in this file's range, so definitely not base level
+                        // Key falls in this file's range, so definitely not base level // NOTE: The Key point
                         return false;
                     }
                     break;
@@ -170,6 +170,17 @@ public class Compaction
         return true;
     }
 
+    /*
+    Source: https://github.com/google/leveldb/issues/811
+    I am reading leveldb recently. In function DBImpl::DoCompactionWork(), it will call Compaction::ShouldStopBefore for every key.
+    According to file impl.md, Compaction::ShouldStopBefore() is used to avoid that an output file overlaps two much grandparent(level+2) files.
+
+    When an output file is too large, it will close and create a new output file. But the state of Compaction::ShouldStopBefore() seems not
+    to change, so overlapped_bytes_ used in Compaction::ShouldStopBefore() will keep rising when a new output file is used. Have I missed
+    something? or it is designed to be so? or it is a bug?
+
+
+     */
     // Returns true iff we should stop building the current output
     // before processing "internal_key".
     public boolean shouldStopBefore(InternalKey internalKey)

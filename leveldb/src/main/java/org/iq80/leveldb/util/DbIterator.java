@@ -133,6 +133,7 @@ public final class DbIterator
             heap[heapSize] = null;
         }
 
+        // adding next element back to PriorityQueue
         if (replacementElement != null) {
             heap[0] = replacementElement;
             heapSiftDown(0);

@@ -27,6 +27,27 @@ public interface UserComparator
 {
     String name();
 
+    /*
+    The FindShortestSeparator() function works as follows:
+
+    o Determine the index of the first byte that differs between the
+    previous key and the next key.
+    o If that index is past the end of either key, then one key is a prefix
+    of the other, so don't shorten the previous key.
+    o Otherwise, check whether the first differing byte from the previous
+    key can be incremented without being equal to the byte from the next
+    key, and whether the byte from the previous key is not already at its
+    maximum value of 0xFF. If so, shorten the previous key to include the
+    shared prefix and that one incremented byte.
+    o Otherwise, done shorten the previous key.
+
+
+    ///Second : https://groups.google.com/g/leveldb/c/pbpfT0RYABU
+    // This isn't optimal, but it matches the C++ Level-DB implementation, and
+    // it's good enough. For example, if a is "1357" and b is "2", then the
+    // optimal (i.e. shortest) result is appending "14", but we append "1357".
+
+    */
     Slice findShortestSeparator(Slice start, Slice limit);
 
     Slice findShortSuccessor(Slice key);

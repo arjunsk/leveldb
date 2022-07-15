@@ -96,7 +96,25 @@ public final class SnapshotSeekingIterator
                 deletedKey = internalKey.getUserKey();
             }
             else if (internalKey.getValueType() == ValueType.VALUE) {
+                /*
+
+            case kTypeDeletion:
+              // Arrange to skip all upcoming entries for this key since
+              // they are hidden by this deletion.
+              SaveKey(ikey.user_key, skip);
+              skipping = true;
+              break;
+            case kTypeValue:
+              if (skipping &&
+                  user_comparator_->Compare(ikey.user_key, *skip) <= 0) {
+                // Entry hidden
+              } else {
+
+
+                * */
                 // is this value masked by a prior deletion record?
+
+                // if deletedKey == null, we can exit this do while loop, because, now we can read from the peek().
                 if (deletedKey == null || userComparator.compare(internalKey.getUserKey(), deletedKey) > 0) {
                     return;
                 }
@@ -116,3 +134,4 @@ public final class SnapshotSeekingIterator
         return sb.toString();
     }
 }
+

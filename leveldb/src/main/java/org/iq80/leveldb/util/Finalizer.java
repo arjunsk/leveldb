@@ -158,6 +158,7 @@ public class Finalizer<T>
 
                 boolean rescheduleAndReturn = false;
                 try {
+                    // Core: This is what we call finally. The cleanup()
                     reference.cleanup();
                     rescheduleAndReturn = Thread.currentThread().isInterrupted();
                 }
